@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  uzai-bot:
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - BOT_TOKEN=${BOT_TOKEN}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DATABASE_URL=postgresql://uzai_user:uzai_secret@postgres:5432/uzai_db
+      - REDIS_URL=redis://redis:6379
+      - ADMIN_IDS=${ADMIN_IDS:-541021808}
+      - FREE_DAILY_LIMIT=20
+      - PREMIUM_DAILY_LIMIT=200
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: uzai_user
+      POSTGRES_PASSWORD: uzai_secret
+      POSTGRES_DB: uzai_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uzai_user -d uzai_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:

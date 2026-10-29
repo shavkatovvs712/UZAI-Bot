@@ -1,0 +1,6 @@
+{
+  "name": "UZAI — Professional AI Telegram Bot",
+  "description": "Node.js texnologiyasida yaratilgan zamonaviy sun'iy intellekt Telegram boti va boshqaruv studiyasi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
